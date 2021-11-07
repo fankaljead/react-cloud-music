@@ -1,14 +1,39 @@
-# 路由配置
-- 安装依赖
+# 推荐模块1：打造炫酷轮播及列表
+## 轮播组件开发
+- `Recommend` 组件
+
+- `Slider` 组件
+    -   安装 `swiper` 插件
+    ```bash
+    yarn add swiper
+    ```
+
+    - 引入 CSS
+    ```js
+    // slider/index.js
+    import "swiper/swiper.min.css";
+    ```
+
+## 分布拆解 `scroll` 组件
+- 安装 `better-scroll`
 ```bash
-yarn add react-router@5.2.0 react-router-dom@5.2.0 react-router-config
+yarn add better-scroll@next
 ```
 
-这里的 `react-router` 版本太高（6.0.1） `Redirect` 组件被移除
-
-
-# redux
-- 安装
+## axios 请求封装
+- 安装 
 ```bash
-yarn add redux redux-thunk redux-immutable react-redux immutable
+yarn add axios
+```
+
+
+## 一个在线的网易云 API 网站
+```js
+export const baseUrl = "https://music-api-five.vercel.app";
+```
+
+## 图片懒加载
+- 安装 `react-lazyload`
+```bash
+yarn add react-lazyload
 ```
