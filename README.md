@@ -60,5 +60,35 @@ export const getSingerListRequest = (category, alpha, count) => {
 ## 用 hooks 写一个简单的 redux
 
 
-DONE: 下拉刷新没有保留地区，
-https://juejin.cn/book/6844733816460804104/section/6844733816561516551
+## 歌单详情1 情感切页动画
+使用第三方库 `react-transition-group`
+```bash
+yarn add react-transition-group
+```
+
+`Album/style.js` 样式应调整为
+```js
+export const Container = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1000;
+  background: ${style["background-color"]};
+  transform-origin: right bottom;
+  &.fly-enter,
+  &.fly-appear {
+    transform: rotateZ(0deg) translate3d(100%, 0, 0);
+  }
+  &.fly-appear.fly-appear-active,
+  &.fly-appear-done.fly-enter-done {
+    transition: transform 0.3s;
+    transform: rotateZ(0deg) translate3d(0, 0, 0);
+  }
+  &.fly-exit.fly-exit-active {
+    transition: transform 0.3s;
+    transform: rotateZ(30deg) translate3d(100%, 0, 0);
+  }
+`;
+```
