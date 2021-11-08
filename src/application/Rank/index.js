@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { connect } from "react-redux";
 import { getRankList } from "./store";
-import { filterIndex, filterIdx } from "../../api/utils";
+import { filterIndex } from "../../api/utils";
 import { renderRoutes } from "react-router-config";
 import { List, ListItem, SongList, Container } from "./style";
 import { EnterLoading } from "./../Singers/style";

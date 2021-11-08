@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useEffect, useContext } from "react";
 import Horizen from "../../baseUI/horizen-item";
 import { categoryTypes, alphaTypes, singerAreas } from "../../api/config";
 import { NavContainer, ListContainer, List, ListItem } from "./style";
@@ -23,6 +23,9 @@ import {
   CHANGE_CATEGORY,
   Data,
 } from "./data";
+import { renderRoutes } from "react-router-config";
+
+
 
 //mock 数据
 // const singerList = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map((item) => {
@@ -113,13 +116,22 @@ function Singers(props) {
     pullDownRefreshDispatch(category, alpha, area);
   };
 
+  const enterDetail = (id) => {
+    props.history.push(`/singers/${id}`);
+  };
+
   const renderSingerList = () => {
     const list = singerList ? singerList.toJS() : [];
     return (
       <List>
         {list.map((item, index) => {
           return (
-            <ListItem key={item.accountId + "" + index}>
+            <ListItem
+              key={item.accountId + "" + index}
+              onClick={() => {
+                enterDetail(item.id);
+              }}
+            >
               <div className="img_wrapper">
                 <LazyLoad
                   placeholder={
@@ -184,6 +196,8 @@ function Singers(props) {
           <Loading show={enterLoading}></Loading>
         </ListContainer>
       </Data>
+
+      {renderRoutes(props.route.routes)}
     </div>
   );
 }
