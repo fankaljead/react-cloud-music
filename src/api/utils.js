@@ -58,3 +58,41 @@ export const getName = (list) => {
 
 // 判断一个对象是否为空
 export const isEmptyObject = (obj) => !obj || Object.keys(obj).length === 0;
+
+//转换歌曲播放时间
+export const formatPlayTime = (interval) => {
+  interval = interval | 0;
+  const minute = (interval / 60) | 0;
+  const second = (interval % 60).toString().padStart(2, "0");
+  return `${minute}:${second}`;
+};
+
+// 给css3相关属性增加浏览器前缀，处理浏览器兼容性问题
+let elementStyle = document.createElement("div").style;
+
+let vendor = (() => {
+  //首先通过transition属性判断是何种浏览器
+  let transformNames = {
+    webkit: "webkitTransform",
+    Moz: "MozTransform",
+    O: "OTransfrom",
+    ms: "msTransform",
+    standard: "Transform",
+  };
+  for (let key in transformNames) {
+    if (elementStyle[transformNames[key]] !== undefined) {
+      return key;
+    }
+  }
+  return false;
+})();
+
+export function prefixStyle(style) {
+  if (vendor === false) {
+    return false;
+  }
+  if (vendor === "standard") {
+    return style;
+  }
+  return vendor + style.charAt(0).toUpperCase() + style.substr(1);
+}

@@ -92,3 +92,9 @@ export const Container = styled.div`
   }
 `;
 ```
+
+## 播放器 
+js 中写 css 应该注意空格，有些空格会导致 css 失效
+```js
+`translate3d(${x}px, ${y}px, 0) scale(${scale})`;
+```
