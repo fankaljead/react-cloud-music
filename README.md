@@ -44,68 +44,6 @@ yarn add react-lazyload
 ```js
 // api/config.js
 // 歌手种类
-export const categoryTypes = [
-  {
-    name: "华语男",
-    key: "1",
-  },
-  {
-    name: "华语女",
-    key: "2",
-  },
-  {
-    name: "华语组合",
-    key: "3",
-  },
-  {
-    name: "欧美男",
-    key: "4",
-  },
-  {
-    name: "欧美女",
-    key: "5",
-  },
-  {
-    name: "欧美组合",
-    key: "6",
-  },
-  {
-    name: "日本男",
-    key: "7",
-  },
-  {
-    name: "日本女",
-    key: "8",
-  },
-  {
-    name: "日本组合",
-    key: "9",
-  },
-  {
-    name: "韩国男",
-    key: "10",
-  },
-  {
-    name: "韩国女",
-    key: "11",
-  },
-  {
-    name: "韩国组合",
-    key: "12",
-  },
-  {
-    name: "其他男歌手",
-    key: "13",
-  },
-  {
-    name: "其他女歌手",
-    key: "14",
-  },
-  {
-    name: "其他组合",
-    key: "15",
-  },
-];
 
 ```
 
@@ -118,3 +56,9 @@ export const getSingerListRequest = (category, alpha, count) => {
   );
 };
 ```
+
+## 用 hooks 写一个简单的 redux
+
+
+DONE: 下拉刷新没有保留地区，
+https://juejin.cn/book/6844733816460804104/section/6844733816561516551
