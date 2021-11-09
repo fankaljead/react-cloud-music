@@ -14,6 +14,7 @@ import { HEADER_HEIGHT } from "./../../api/config";
 import { connect } from "react-redux";
 import { getSingerInfo, changeEnterLoading } from "./store/actionCreators";
 import Loading from "./../../baseUI/loading/index";
+import MusicNote from "../../baseUI/music-note";
 
 function Singer(props) {
   const [showStatus, setShowStatus] = useState(true);
@@ -24,6 +25,7 @@ function Singer(props) {
   const songScroll = useRef();
   const header = useRef();
   const layer = useRef();
+  const musicNoteRef = useRef();
 
   const { artist: immutableArtist, songs: immutableSongs, loading } = props;
 
@@ -92,6 +94,10 @@ function Singer(props) {
   const setShowStatusFalse = useCallback(() => {
     setShowStatus(false);
   }, []);
+
+  const musicAnimation = (x, y) => {
+    musicNoteRef.current.startAnimation({ x, y });
+  };
 
   // mock 数据
   // const artist = {
@@ -219,10 +225,15 @@ function Singer(props) {
         <BgLayer ref={layer}></BgLayer>
         <SongListWrapper ref={songScrollWrapper}>
           <Scroll ref={songScroll} onScroll={handleScroll}>
-            <SongsList songs={songs} showCollect={false}></SongsList>
+            <SongsList
+              songs={songs}
+              showCollect={false}
+              musicAnimation={musicAnimation}
+            ></SongsList>
           </Scroll>
         </SongListWrapper>
         {loading ? <Loading></Loading> : null}
+        <MusicNote ref={musicNoteRef}></MusicNote>
       </Container>
     </CSSTransition>
   );

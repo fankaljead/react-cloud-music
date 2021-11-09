@@ -113,8 +113,8 @@ export function shuffle(arr = []) {
     new_arr.push(item);
   });
   for (let i = 0; i < new_arr.length; i++) {
-    let j = getRandomInt(0, i);
-    [arr[i], arr[j]] = [arr[j], arr[i]];
+    let j = getRandomInt(0, new_arr.length - 1);
+    [new_arr[i], new_arr[j]] = [new_arr[j], new_arr[i]];
   }
   return new_arr;
 }

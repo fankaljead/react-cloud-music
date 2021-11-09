@@ -35,6 +35,7 @@ function Player(props) {
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [modeText, setModeText] = useState("");
+  const [songReady, setSongReady] = useState(true);
   const toastRef = useRef();
 
   let percent = isNaN(currentTime / duration) ? 0 : currentTime / duration;
@@ -54,9 +55,9 @@ function Player(props) {
   //记录当前的歌曲，以便于下次重渲染时比对是否是一首歌
   const [preSong, setPreSong] = useState({});
 
-  useEffect(() => {
-    changeCurrentIndexDispatch(0);
-  });
+  // useEffect(() => {
+  //   changeCurrentIndexDispatch(0);
+  // });
 
   // mock一份playList，后面直接从 redux 拿，现在只是为了调试播放效果。
   // const playList = [
@@ -143,22 +144,24 @@ function Player(props) {
   //   ar: [{ name: "薛之谦" }],
   // };
 
-  useEffect(() => {
-    if (!currentSong) {
-      return;
-    }
-    changeCurrentDispatch(0);
-    let current = playList[0];
-    changeCurrentDispatch(current);
-    audieRef.current.src = getSongUrl(current.id);
-    setTimeout(() => {
-      audieRef.current.play();
-    });
-    togglePlayingDispatch(true);
-    setCurrentTime(0);
-    setDuration((current.dt / 1000) | 0);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  // useEffect(() => {
+  //   if (!currentSong) {
+  //     return;
+  //   }
+  //   changeCurrentDispatch(0);
+  //   let current = playList[0];
+  //   if (current) {
+  //     changeCurrentDispatch(current);
+  //     audieRef.current.src = getSongUrl(current.id);
+  //     setTimeout(() => {
+  //       audieRef.current.play();
+  //     });
+  //     togglePlayingDispatch(true);
+  //     setCurrentTime(0);
+  //     setDuration((current.dt / 1000) | 0);
+  //   }
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, []);
 
   useEffect(() => {
     playing ? audieRef.current.play() : audieRef.current.pause();
@@ -169,24 +172,28 @@ function Player(props) {
       !playList.length ||
       currentIndex === -1 ||
       !playList[currentIndex] ||
-      playList[currentIndex].id === preSong.id
+      playList[currentIndex].id === preSong.id ||
+      !songReady
     )
       return;
     let current = playList[currentIndex];
-    changeCurrentDispatch(current); //赋值currentSong
     setPreSong(current);
+    setSongReady(false);
+    changeCurrentDispatch(current); //赋值currentSong
 
     // Unhandled rejectjion (AbortError): THE fetching process for the
     // media resource was aborted by the use agent at the user's request
     // 这里需要判断 src 是否和之前一样
-    // audioRef.current.src = getSongUrl(current.id);
-    let src = getSongUrl(current.id);
-    if (!src === audieRef.current.src) {
-      audieRef.current.src = src;
-    }
+    audieRef.current.src = getSongUrl(current.id);
+    // let src = getSongUrl(current.id);
+    // if (!src === audieRef.current.src) {
+    //   audieRef.current.src = src;
+    // }
 
     setTimeout(() => {
-      audieRef.current.play();
+      audieRef.current.play().then(() => {
+        setSongReady(true);
+      });
     });
     togglePlayingDispatch(true); //播放状态
     setCurrentTime(0); //从头开始播放
@@ -220,9 +227,9 @@ function Player(props) {
     // actionTypes.changePlayingState(true);
     togglePlayingDispatch(true);
     audieRef.current.play();
-    if (!playing) {
-      togglePlayingDispatch(true);
-    }
+    // if (!playing) {
+    //   togglePlayingDispatch(true);
+    // }
   };
 
   const handlePre = () => {
@@ -265,12 +272,15 @@ function Player(props) {
       setModeText("顺序循环");
     } else if (newMode === 1) {
       // 单曲循环
-      changePlayListDispatch(sequencePlayList);
+      let newList = [currentSong];
+      // changePlayListDispatch(sequencePlayList);
+      changePlayListDispatch(newList);
       setModeText("单曲循环");
     } else if (newMode === 2) {
       // 随机播放
       let newList = shuffle(sequencePlayList);
       let index = findIndex(currentSong, newList);
+      console.log("currentSong:", currentSong);
       changePlayListDispatch(newList);
       changeCurrentIndexDispatch(index);
       setModeText("随机播放");

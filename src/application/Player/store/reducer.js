@@ -81,12 +81,12 @@ const list = [
 const defaultState = fromJS({
   fullScreen: false,
   playing: false,
-  // sequencePlayList: [],
-  // playList: [],
-  sequencePlayList: list,
-  playList: list,
+  sequencePlayList: [],
+  playList: [],
+  // sequencePlayList: list,
+  // playList: list,
   mode: playMode.sequence,
-  currentIndex: -1,
+  currentIndex: 0,
   showPlayList: false,
   currentSong: {},
 });
