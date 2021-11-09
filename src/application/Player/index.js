@@ -6,6 +6,7 @@ import NormalPlayer from "./normalPlayer";
 import { getSongUrl, isEmptyObject, shuffle, findIndex } from "../../api/utils";
 import Toast from "../../baseUI/toast";
 import { playMode } from "../../api/config";
+import PlayList from "./play-list";
 
 function Player(props) {
   const {
@@ -25,6 +26,7 @@ function Player(props) {
     changeCurrentDispatch,
     changePlayListDispatch,
     changeModeDispatch,
+    togglePlayListDispatch,
   } = props;
 
   let currentSong = immutableCurrentSong.toJS();
@@ -35,7 +37,8 @@ function Player(props) {
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [modeText, setModeText] = useState("");
-  const [songReady, setSongReady] = useState(true);
+  // const [songReady, setSongReady] = useState(true);
+  const songReady = useRef(true);
   const toastRef = useRef();
 
   let percent = isNaN(currentTime / duration) ? 0 : currentTime / duration;
@@ -173,12 +176,13 @@ function Player(props) {
       currentIndex === -1 ||
       !playList[currentIndex] ||
       playList[currentIndex].id === preSong.id ||
-      !songReady
+      !songReady.current
     )
       return;
     let current = playList[currentIndex];
     setPreSong(current);
-    setSongReady(false);
+    // setSongReady(false);
+    songReady.current = false;
     changeCurrentDispatch(current); //赋值currentSong
 
     // Unhandled rejectjion (AbortError): THE fetching process for the
@@ -191,9 +195,15 @@ function Player(props) {
     // }
 
     setTimeout(() => {
-      audieRef.current.play().then(() => {
-        setSongReady(true);
-      });
+      audieRef.current.play().then(
+        () => {
+          // setSongReady(true);
+          songReady.current = true;
+        },
+        (r) => {
+          console.log(r);
+        }
+      );
     });
     togglePlayingDispatch(true); //播放状态
     setCurrentTime(0); //从头开始播放
@@ -272,9 +282,23 @@ function Player(props) {
       setModeText("顺序循环");
     } else if (newMode === 1) {
       // 单曲循环
-      let newList = [currentSong];
-      // changePlayListDispatch(sequencePlayList);
-      changePlayListDispatch(newList);
+       let newMode = (mode + 1) % 3;
+  if (newMode === 0) {
+    // 顺序模式
+    changePlayListDispatch (sequencePlayList);
+    let index = findIndex (currentSong, sequencePlayList);
+    changeCurrentIndexDispatch (index);
+  } else if (newMode === 1) {
+    // 单曲循环
+    changePlayListDispatch (sequencePlayList);
+  } else if (newMode === 2) {
+    // 随机播放
+    let newList = shuffle (sequencePlayList);
+    let index = findIndex (currentSong, newList);
+    changePlayListDispatch (newList);
+    changeCurrentIndexDispatch (index);
+  }
+  changeModeDispatch (newMode);
       setModeText("单曲循环");
     } else if (newMode === 2) {
       // 随机播放
@@ -297,6 +321,11 @@ function Player(props) {
     }
   };
 
+  const handleError = () => {
+    songReady.current = true;
+    alert("播放出错");
+  };
+
   return (
     <div>
       {isEmptyObject(currentSong) ? null : (
@@ -307,6 +336,7 @@ function Player(props) {
           clickPlaying={clickPlaying}
           playing={playing}
           percent={percent}
+          togglePlayList={togglePlayListDispatch}
         />
       )}
       {isEmptyObject(currentSong) ? null : (
@@ -324,13 +354,16 @@ function Player(props) {
           handleNext={handleNext}
           mode={mode}
           changeMode={changeMode}
+          togglePlayList={togglePlayListDispatch}
         />
       )}
       <audio
         ref={audieRef}
         onTimeUpdate={updateTime}
         onEnded={handleEnd}
+        onError={handleError}
       ></audio>
+      <PlayList></PlayList>
       <Toast text={modeText} ref={toastRef}></Toast>
     </div>
   );
