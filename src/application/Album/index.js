@@ -20,7 +20,7 @@ function Album(props) {
 
   const id = props.match.params.id;
 
-  const { currentAlbum: currentAlbumImmutable, enterLoading } = props;
+  const { currentAlbum: currentAlbumImmutable, enterLoading,songsCount } = props;
   const { getAlbumDataDispatch } = props;
 
   useEffect(() => {
@@ -247,7 +247,7 @@ function Album(props) {
       unmountOnExit
       onExited={props.history.goBack}
     >
-      <Container>
+      <Container play={songsCount}>
         <Header
           title={title}
           handleClick={handleBack}
@@ -280,6 +280,7 @@ function Album(props) {
 const mapStateToProps = (state) => ({
   currentAlbum: state.getIn(["album", "currentAlbum"]),
   enterLoading: state.getIn(["album", "enterLoading"]),
+  songsCount: state.getIn(["player", "playList"]).size,
 });
 
 const mapDispatchToProps = (dispatch) => ({

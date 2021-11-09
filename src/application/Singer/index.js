@@ -27,7 +27,12 @@ function Singer(props) {
   const layer = useRef();
   const musicNoteRef = useRef();
 
-  const { artist: immutableArtist, songs: immutableSongs, loading } = props;
+  const {
+    artist: immutableArtist,
+    songs: immutableSongs,
+    loading,
+    songsCount,
+  } = props;
 
   const { getSingerDataDispatch } = props;
 
@@ -209,7 +214,7 @@ function Singer(props) {
       unmountOnExit
       onExited={() => props.history.goBack()}
     >
-      <Container>
+      <Container play={songsCount}>
         <Header
           handleClick={setShowStatusFalse}
           title={artist.name}
@@ -243,6 +248,7 @@ const mapStateToProps = (state) => ({
   artist: state.getIn(["singerInfo", "artist"]),
   songs: state.getIn(["singerInfo", "songsOfArtist"]),
   loading: state.getIn(["singerInfo", "loading"]),
+  songsCount: state.getIn(["player", "playList"]).size,
 });
 
 const mapDispatchToProps = (dispatch) => {
