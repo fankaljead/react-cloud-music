@@ -1,7 +1,7 @@
 import axios from "axios";
 
-// export const baseUrl = "http://127.0.0.1:4000";
-export const baseUrl = "https://music-api-five.vercel.app";
+export const baseUrl = "http://127.0.0.1:4000";
+// export const baseUrl = "https://music-api-five.vercel.app";
 
 const axiosInstance = axios.create({
   baseURL: baseUrl,
