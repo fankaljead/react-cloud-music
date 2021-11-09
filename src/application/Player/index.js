@@ -7,6 +7,8 @@ import { getSongUrl, isEmptyObject, shuffle, findIndex } from "../../api/utils";
 import Toast from "../../baseUI/toast";
 import { playMode } from "../../api/config";
 import PlayList from "./play-list";
+import { getLyricRequest } from "../../api/request";
+import Lyric from "./../../api/lyric-parser";
 
 function Player(props) {
   const {
@@ -37,9 +39,13 @@ function Player(props) {
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [modeText, setModeText] = useState("");
+  const [currentPlayingLyric, setPlayingLyric] = useState("");
+
   // const [songReady, setSongReady] = useState(true);
   const songReady = useRef(true);
   const toastRef = useRef();
+  const currentLyric = useRef();
+  const currentLineNum = useRef(0);
 
   let percent = isNaN(currentTime / duration) ? 0 : currentTime / duration;
 
@@ -166,6 +172,30 @@ function Player(props) {
   //   // eslint-disable-next-line react-hooks/exhaustive-deps
   // }, []);
 
+  const getLyric = (id) => {
+    let lyric = "";
+    if (currentLyric.current) {
+      currentLyric.current.stop();
+    }
+    // 避免 songReady 恒为 false 的情况
+    getLyricRequest(id)
+      .then((data) => {
+        lyric = data.lrc.lyric;
+        if (!lyric) {
+          currentLyric.current = null;
+          return;
+        }
+        currentLyric.current = new Lyric(lyric, handleLyric);
+        currentLyric.current.play();
+        currentLineNum.current = 0;
+        currentLyric.current.seek(0);
+      })
+      .catch(() => {
+        songReady.current = true;
+        audieRef.current.play();
+      });
+  };
+
   useEffect(() => {
     playing ? audieRef.current.play() : audieRef.current.pause();
   }, [playing]);
@@ -206,6 +236,7 @@ function Player(props) {
       );
     });
     togglePlayingDispatch(true); //播放状态
+    getLyric(current.id);
     setCurrentTime(0); //从头开始播放
     setDuration((current.dt / 1000) | 0); //时长
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -214,6 +245,9 @@ function Player(props) {
   const clickPlaying = (e, state) => {
     e.stopPropagation();
     togglePlayingDispatch(state);
+    if (currentLyric.current) {
+      currentLyric.current.togglePlay(currentTime * 1000);
+    }
   };
 
   const updateTime = (e) => {
@@ -227,6 +261,9 @@ function Player(props) {
     audieRef.current.currentTime = newTime;
     if (!playing) {
       togglePlayingDispatch(true);
+    }
+    if (currentLyric.current) {
+      currentLyric.current.seek(newTime * 1000);
     }
   };
 
@@ -282,23 +319,9 @@ function Player(props) {
       setModeText("顺序循环");
     } else if (newMode === 1) {
       // 单曲循环
-       let newMode = (mode + 1) % 3;
-  if (newMode === 0) {
-    // 顺序模式
-    changePlayListDispatch (sequencePlayList);
-    let index = findIndex (currentSong, sequencePlayList);
-    changeCurrentIndexDispatch (index);
-  } else if (newMode === 1) {
-    // 单曲循环
-    changePlayListDispatch (sequencePlayList);
-  } else if (newMode === 2) {
-    // 随机播放
-    let newList = shuffle (sequencePlayList);
-    let index = findIndex (currentSong, newList);
-    changePlayListDispatch (newList);
-    changeCurrentIndexDispatch (index);
-  }
-  changeModeDispatch (newMode);
+      let newList = [currentSong];
+      // changePlayListDispatch(sequencePlayList);
+      changePlayListDispatch(newList);
       setModeText("单曲循环");
     } else if (newMode === 2) {
       // 随机播放
@@ -324,6 +347,12 @@ function Player(props) {
   const handleError = () => {
     songReady.current = true;
     alert("播放出错");
+  };
+
+  const handleLyric = ({ lineNum, txt }) => {
+    if (!currentLyric.current) return;
+    currentLineNum.current = lineNum;
+    setPlayingLyric(txt);
   };
 
   return (
@@ -355,6 +384,9 @@ function Player(props) {
           mode={mode}
           changeMode={changeMode}
           togglePlayList={togglePlayListDispatch}
+          currentLyric={currentLyric.current}
+          currentPlayingLyric={currentPlayingLyric}
+          currentLineNum={currentLineNum.current}
         />
       )}
       <audio
