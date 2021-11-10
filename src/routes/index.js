@@ -7,6 +7,7 @@ import Rank from "../application/Rank";
 import { Redirect } from "react-router-dom";
 import Album from "../application/Album";
 import Singer from "../application/Singer";
+import Search from "../application/Search";
 
 const routes = [
   {
@@ -50,6 +51,12 @@ const routes = [
             component: Album,
           },
         ],
+      },
+      {
+        path: "/search",
+        component: Search,
+        key: "search",
+        exact: true,
       },
     ],
   },
