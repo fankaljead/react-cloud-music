@@ -1,9 +1,9 @@
 import React, { useState, useRef, useCallback, useEffect } from "react";
-import { Container, TopDesc, Menu, SongItem, SongList } from "./style";
+import { Container, TopDesc, Menu } from "./style";
 import { CSSTransition } from "react-transition-group";
 import Header from "../../baseUI/header";
 import Scroll from "../../baseUI/scroll/index";
-import { getName, getCount, isEmptyObject } from "../../api/utils";
+import { getCount, isEmptyObject } from "../../api/utils";
 import { HEADER_HEIGHT } from "../../api/config";
 import style from "../../assets/global-style";
 import { connect } from "react-redux";
@@ -20,7 +20,11 @@ function Album(props) {
 
   const id = props.match.params.id;
 
-  const { currentAlbum: currentAlbumImmutable, enterLoading,songsCount } = props;
+  const {
+    currentAlbum: currentAlbumImmutable,
+    enterLoading,
+    songsCount,
+  } = props;
   const { getAlbumDataDispatch } = props;
 
   useEffect(() => {
